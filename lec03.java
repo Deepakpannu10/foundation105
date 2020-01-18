@@ -63,20 +63,17 @@ class lec03{
         int sp=n/2;
         for(int cr=1; cr<=n;cr++){
             for(int csp=1;csp<=sp;csp++){
-                System.out.print(" ");
+                System.out.print("\t");
             }
             for(int cst=1;cst<=st;cst++){
-                System.out.print("*");
+                System.out.print("*\t");
             }
             if(cr<=n/2){
-                sp--;
-                st=st+2;
+                sp--;   st=st+2;
             }else{
-                sp++;
-                st -= 2 ;   }
-            System.out.println();
+                sp++;  st -= 2 ;   }
+                System.out.println();
+                System.out.println();
         }
-
-
     }
-}
+} 
