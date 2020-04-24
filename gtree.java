@@ -195,6 +195,9 @@ class gtree{
 
 
     public static void LOZZ( node root ){
+        if( root == null ){
+            return;
+        }
         Queue<node> qu = new LinkedList<>();
         ArrayList<node> st = new ArrayList<>();
         qu.add(root);
