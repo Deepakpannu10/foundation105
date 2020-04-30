@@ -14,6 +14,8 @@ class btree{
     static node root = null;
 
     public static void construct() {
+        // int[] data = { 10,20,30,80,120,130,-1,-1,-1,-1,40,90,100,110,-1,-1,-1,-1,-1,50,60,-1,70 };
+        // diameter k liye copy.
         int[] data = { 10,20,30,80,-1,-1,40,-1,-1,50,60,-1,70 };
         ArrayList<node> stack = new ArrayList<>();
         for( int i = 0 ; i < data.length ; i++ ){
@@ -193,6 +195,78 @@ class btree{
         croot.right = preInConstruct(pre,in, ps+count+1 , pe , i + 1  , ie  ); // right sub tree
         return croot;
     }
+
+
+    //---------------------------------------------
+    // diameter n^2 
+    public static int diameter( node root ){
+        if( root == null ){
+            return 0;
+        }
+        int ld = diameter( root.left );
+        int rd = diameter( root.right);
+
+        int lh = height( root.left );
+        int rh = height( root.right );
+
+        int myDia = Math.max( lh + rh + 1, Math.max( ld, rd ) );
+        return myDia;
+    }
+
+
+    static class diaHelper{
+        int ht = 0;
+        int dia = 0;
+    }
+
+    // diameter dp n^1
+
+    public static diaHelper diameterDP( node root ){
+        if( root == null ){
+            diaHelper baseAns = new diaHelper();
+            return baseAns;
+        }else if( root.left == null && root.right == null ){
+            diaHelper baseAns = new diaHelper();
+            baseAns.ht = 1;
+            baseAns.dia = 1;
+            return baseAns;
+        }
+        diaHelper lAns = diameterDP( root.left );
+        diaHelper rAns = diameterDP( root.right );
+        diaHelper myAns = new diaHelper();
+        myAns.dia = Math.max( lAns.ht + rAns.ht + 1, Math.max( lAns.dia, rAns.dia ));
+        myAns.ht = Math.max( lAns.ht, rAns.ht ) + 1;
+        return myAns;
+    }
+
+    //----------------
+    static class balHelper{
+        boolean isBal = true;
+        int ht = 0;
+    }
+
+    public static balHelper isTreeBalanced( node root ){
+        if( root == null ){
+            balHelper baseAns = new balHelper();
+            return baseAns;
+        }else if( root.left == null && root.right == null ){
+            balHelper baseAns = new balHelper();
+            baseAns.isBal =  true;
+            baseAns.ht = 1;
+            return baseAns;
+        }
+        balHelper lAns = isTreeBalanced( root.left );
+        balHelper rAns = isTreeBalanced( root.right );
+
+        balHelper myAns = new balHelper();
+        myAns.isBal = lAns.isBal && rAns.isBal && lAns.ht  - rAns.ht >= -1 && lAns.ht  - rAns.ht <= 1;
+        myAns.ht = Math.max( lAns.ht, rAns.ht ) + 1;
+        return myAns;
+    }
+
+
+
+
     public static void main(String[] args) {
         construct();
         // display( root );
@@ -204,10 +278,14 @@ class btree{
         // System.out.println( " <- pre. ");
         // inOrder( root );
         // System.out.println( " <- in. ");
-        int[] pre = { 10,20,30,40,50,60,70,80 };
-        int[] in = { 20,40,30,50,10,60,80,70 };
+        // int[] pre = { 10,20,30,40,50,60,70,80 };
+        // int[] in = { 20,40,30,50,10,60,80,70 };
 
-        node root1 = preInConstruct(pre, in, 0 , pre.length - 1 , 0 , in.length - 1);       
-        display( root1 );
+        // node root1 = preInConstruct(pre, in, 0 , pre.length - 1 , 0 , in.length - 1);       
+        // display( root1 );
+    //    System.out.println( diameter( root ) );
+        // diaHelper ans = diameterDP( root );
+        balHelper ans = isTreeBalanced( root );
+        System.out.println( ans.isBal );
     }
 }
