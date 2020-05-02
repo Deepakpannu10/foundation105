@@ -16,7 +16,9 @@ class btree{
     public static void construct() {
         // int[] data = { 10,20,30,80,120,130,-1,-1,-1,-1,40,90,100,110,-1,-1,-1,-1,-1,50,60,-1,70 };
         // diameter k liye copy.
-        int[] data = { 10,20,30,80,-1,-1,40,-1,-1,50,60,-1,70 };
+        // int[] data = { 10,20,30,80,-1,-1,40,-1,-1,50,60,-1,70 };
+        // int[] data = { 50,30,10,-1,40,45,-1,-1,-1,70,60,-1,80 };
+        int[] data={50,30,20,-1,40,37,-1,52,45,-1,-1,-1,-1,70,60,55,-1,-1,80,75,72,-1,-1,90};
         ArrayList<node> stack = new ArrayList<>();
         for( int i = 0 ; i < data.length ; i++ ){
             if( data[i] == -1 ){
@@ -92,6 +94,28 @@ class btree{
             } 
         }
         return myMax;
+    }
+
+
+    
+    public static int min( node root ) {
+        if( root == null ){
+            return Integer.MAX_VALUE;
+        }
+        int myMin = root.data;
+        if( root.left != null ){
+            int lm = min( root.left );
+            if( myMin > lm ){
+                myMin = lm;
+            }
+        }
+        if( root.right != null ){
+            int rm = min( root.right );
+            if( rm < myMin ){
+                myMin = rm;
+            } 
+        }
+        return myMin;
     }
 
 
@@ -245,7 +269,27 @@ class btree{
         int ht = 0;
     }
 
-    public static balHelper isTreeBalanced( node root ){
+
+    public static boolean isTreeBalanced( node root ){
+        if( root == null ){
+            return true;
+        }else if( root.left == null && root.right == null ){
+            return true;
+        }
+        boolean lb = isTreeBalanced( root.left );
+        boolean rb = isTreeBalanced( root.right );
+
+        int lh = height( root.left );
+        int rh = height( root.right );
+
+        boolean mybal = lb && rb && lh-rh >= -1 && lh - rh <= 1;
+        return mybal;
+    }
+
+
+
+
+    public static balHelper isTreeBalancedDP( node root ){
         if( root == null ){
             balHelper baseAns = new balHelper();
             return baseAns;
@@ -255,8 +299,8 @@ class btree{
             baseAns.ht = 1;
             return baseAns;
         }
-        balHelper lAns = isTreeBalanced( root.left );
-        balHelper rAns = isTreeBalanced( root.right );
+        balHelper lAns = isTreeBalancedDP( root.left );
+        balHelper rAns = isTreeBalancedDP( root.right );
 
         balHelper myAns = new balHelper();
         myAns.isBal = lAns.isBal && rAns.isBal && lAns.ht  - rAns.ht >= -1 && lAns.ht  - rAns.ht <= 1;
@@ -264,6 +308,101 @@ class btree{
         return myAns;
     }
 
+
+    public static boolean isTreeBST( node root ){
+        if( root == null ){
+            return true;
+        }else if( root.left == null && root.right == null ){
+            return true;
+        }
+        boolean lbst =  isTreeBST( root.left );
+        if(  lbst == false ){
+            return false;
+        }
+        boolean rbst = isTreeBST( root.right );
+        if( rbst == false ){
+            return false;
+        }
+        int lmax = max( root.left );
+        int rmin = min( root.right );
+        return lmax < root.data && root.data < rmin;
+    }
+
+    static class bstHelper{
+        int min =  Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        boolean isBst = true;
+        int size = 0;
+        node lBSTRoot = null;
+    }
+
+
+    public static bstHelper isTreeBSTDP(node root){
+        if( root == null ){
+            return new bstHelper();
+        }else if( root.left == null && root.right == null ){
+            bstHelper baseAns = new bstHelper();
+            baseAns.min = root.data;    baseAns.max = root.data;
+            return baseAns;
+        }
+        bstHelper lAns = isTreeBSTDP( root.left );
+        bstHelper rAns = isTreeBSTDP( root.right );
+        bstHelper myAns = new bstHelper();
+        myAns.isBst = lAns.isBst && rAns.isBst && lAns.max < root.data && root.data < rAns.min ;
+        if( myAns.isBst ){
+            if( root.left != null ){
+                myAns.min = lAns.min;
+            }else{
+                myAns.min = root.data;
+            }
+
+            if( root.right != null ){
+                myAns.max = rAns.max;
+            }else{
+                myAns.max = root.data;
+            }
+        }
+        return myAns;
+    }
+
+
+    public static bstHelper largestTreeBSTDP(node root){
+        if( root == null ){
+            return new bstHelper();
+        }else if( root.left == null && root.right == null ){
+            bstHelper baseAns = new bstHelper();
+            baseAns.min = root.data;    baseAns.max = root.data;    baseAns.size = 1; baseAns.lBSTRoot = root;
+            return baseAns;
+        }
+        bstHelper lAns = largestTreeBSTDP( root.left );
+        bstHelper rAns = largestTreeBSTDP( root.right );
+        bstHelper myAns = new bstHelper();
+        myAns.isBst = lAns.isBst && rAns.isBst && lAns.max < root.data && root.data < rAns.min ;
+        if( myAns.isBst ){
+            if( root.left != null ){
+                myAns.min = lAns.min;
+            }else{
+                myAns.min = root.data;
+            }
+
+            if( root.right != null ){
+                myAns.max = rAns.max;
+            }else{
+                myAns.max = root.data;
+            }
+            myAns.size = lAns.size + rAns.size + 1;
+            myAns.lBSTRoot = root;
+        }else{
+            if( lAns.size > rAns.size ){
+                myAns.size = lAns.size;
+                myAns.lBSTRoot = lAns.lBSTRoot;
+            }else{
+                myAns.size = rAns.size;
+                myAns.lBSTRoot = rAns.lBSTRoot;
+            }
+        }
+        return myAns;
+    }
 
 
 
@@ -285,7 +424,12 @@ class btree{
         // display( root1 );
     //    System.out.println( diameter( root ) );
         // diaHelper ans = diameterDP( root );
-        balHelper ans = isTreeBalanced( root );
-        System.out.println( ans.isBal );
+        // balHelper ans = isTreeBalancedDP( root );
+        // System.out.println( ans.isBal );
+        // System.out.println( isTreeBST( root ) );
+        // bstHelper ans = isTreeBSTDP( root );
+        // System.out.println( ans.isBst );
+        bstHelper ans = largestTreeBSTDP( root );
+        System.out.println( ans.lBSTRoot.data+" - >  " + ans.size);
     }
 }
