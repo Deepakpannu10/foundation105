@@ -1,24 +1,22 @@
 import java.util.*;
 
-class myPQ{
+class myPQ<T extends Comparable<T>>{
 
-
-
-    private ArrayList<Integer> list;
-
+    private ArrayList<T> list;
+    
     myPQ(){
         list = new ArrayList<>();
     }
 
     private void swap( int i, int j ) {
-        int temp = list.get(i);
+        T temp = list.get(i);
         list.set(i, list.get( j ) );
         list.set( j, temp );
     }
 
     private void upheapify( int ci ) {
         int pi = ( ci - 1 ) / 2;
-        if( ci != 0 && list.get( ci ) < list.get( pi ) ){
+        if( ci != 0 && isSwap( pi, ci ) ){
             swap( ci, pi );
             upheapify( pi );
         }
@@ -28,11 +26,11 @@ class myPQ{
         int lci = ( 2 * pi ) + 1;
         int rci = ( 2 * pi ) + 2;
         int si = pi;
-        if( lci < list.size() && list.get( lci ) < list.get( pi ) ){
+        if( lci < list.size() && isSwap( pi , lci ) ){
             si = lci;
         }
-        if( rci < list.size() && list.get( rci ) < list.get( pi ) ){
-            if( list.get( rci ) < list.get( lci ) ){
+        if( rci < list.size() && isSwap( pi, rci ) ){
+            if( isSwap(lci,rci) ){
                 si = rci;
             }            
         }
@@ -43,35 +41,36 @@ class myPQ{
     }
 
 
+    private boolean isSwap( int i, int j ){
+        T ith = list.get(i);
+        T jth = list.get(j);
+
+        if( ith.compareTo( jth ) > 0 ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     //--------------------------------
 
-    public void add( int val ) {
+    public void add( T val ) {
         list.add( val );
         upheapify( list.size() - 1 );
     }
 
-    public int remove() {
+    public T remove() {
         swap(0, list.size() - 1);
-        int remVal = list.remove( list.size() - 1 );
+        T remVal = list.remove( list.size() - 1 );
         downheapify( 0 );
         return remVal;
     }
 
-    public int peek() {
+    public T peek() {
         return list.get(0);
     }
 
     public int size() {
         return list.size();
     }
-
-
-
-
-
-
-
-
-
-
 }
